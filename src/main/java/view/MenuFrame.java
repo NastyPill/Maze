@@ -7,6 +7,7 @@ import entities.TypeOfCell;
 import generator.Direction;
 import javafx.util.Pair;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
@@ -14,7 +15,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,8 +43,8 @@ public class MenuFrame extends JFrame {
     private Pair<Integer, Integer> entrance;
     private boolean haveHole;
 
-    Cell[][] field;
-    String[] typeOfCell;
+    private Cell[][] field;
+    private String[] typeOfCell;
 
 
     public MenuFrame() {
@@ -181,6 +186,43 @@ public class MenuFrame extends JFrame {
         seedArea.setForeground(new Color(205, 205, 205));
         label.setForeground(new Color(205, 205, 205));
         panel.setBackground(new Color(60, 60, 60));
+        JButton picButton = new JButton("Pic");
+        picButton.setBorder(new BevelBorder(0));
+        picButton.setFont(new Font("Arial", Font.BOLD, 20));
+        picButton.setForeground(new Color(205, 205, 205));
+        picButton.setBackground(new Color(60, 60, 60));
+        picButton.setBounds(0, 165, 40, 50);
+
+        panel.add(picButton);
+
+        picButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String s = sizeArea.getText();
+                int dim = -1;
+                if (s.matches("\\d{2,6}")) {
+                    dim = Integer.parseInt(s);
+                    if (dim % 2 == 0) {
+                        dim++;
+                    }
+                } else {
+                    sizeArea.setText("Illegal format");
+                    return;
+                }
+                controller.setSizeX(dim);
+                controller.setSizeY(dim);
+                if (seedArea.getText().equals("Illegal format!") || seedArea.getText().equals("Enter seed here")) {
+                    controller.setSeed(System.currentTimeMillis());
+                } else {
+                    try {
+                        controller.setSeed(Long.parseLong(s));
+                    } catch (NumberFormatException ex) {
+                        seedArea.setText("Illegal format!");
+                    }
+                }
+                controller.imageMakerInvoke();
+            }
+        });
 
         startButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -198,16 +240,20 @@ public class MenuFrame extends JFrame {
                     int dim = -1;
                     if (s.matches("\\d{2,3}")) {
                         dim = Integer.parseInt(s);
-                        if (dim % 2 == 0) {
-                            dim++;
-                        }
-                        if (dim < 15 || dim > 200) {
+                        if (dim > 202) {
                             sizeArea.setText("Size should be 15-200");
-                            //return;
+                        } else {
+                            if (dim % 2 == 0) {
+                                dim++;
+                            }
+                            if (dim < 15 || dim > 202) {
+                                sizeArea.setText("Size should be 15-200");
+                                return;
+                            }
                         }
                     } else {
                         sizeArea.setText("Illegal format");
-                        //return;
+                        return;
                     }
                     controller.setSizeX(dim);
                     controller.setSizeY(dim);
@@ -215,10 +261,9 @@ public class MenuFrame extends JFrame {
                         controller.setSeed(System.currentTimeMillis());
                     } else {
                         try {
-                            controller.setSeed(Long.parseLong(s));
+                            controller.setSeed(Long.parseLong(seedArea.getText()));
                         } catch (NumberFormatException ex) {
                             seedArea.setText("Illegal format!");
-                            //return;
                         }
                     }
                     try {
@@ -337,6 +382,7 @@ public class MenuFrame extends JFrame {
                             }
                         }
                         solveMaze();
+                        savePic();
                     }
                     break;
 
@@ -395,6 +441,27 @@ public class MenuFrame extends JFrame {
         panel.setBackground(new Color(0));
         this.setContentPane(panel);
         panel.requestFocus();
+    }
+
+    private void savePic() {
+        System.out.println("start");
+        BufferedImage image = new BufferedImage(cells.length * 3, cells.length * 3, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = image.createGraphics();
+        for (int j = 0; j < cells.length; j++) {
+            for (int i = 0; i < cells.length; i++) {
+                graphics2D.setColor(cells[j][i].getBackground());
+                graphics2D.fillRect(i * 3, j * 3, 3, 3);
+            }
+        }
+        System.out.println("ok");
+        File file = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toString().substring(6) + "solvedImg.png");
+        try {
+            System.out.println("print");
+            System.out.println(file);
+            ImageIO.write(image, "png", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void solveMaze() {

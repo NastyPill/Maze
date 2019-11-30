@@ -47,10 +47,6 @@ public class Field {
                 field[y][x] = new Cell(x, y, TypeOfCell.HOLE);
     }
 
-    public Pair<Integer, Integer> getEntranceCoords() {
-        return entrance;
-    }
-
     public Boolean setEndPoints(int x, int y, Boolean isExit) {
         if (!isExit) {
             if (x == 1 && y == 1) {

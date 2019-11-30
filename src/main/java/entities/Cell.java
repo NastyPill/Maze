@@ -37,6 +37,7 @@ public class Cell {
     public void setVisited(boolean visited) {
         this.visited = visited;
     }
+
     public boolean isVisited() {
         return visited;
     }

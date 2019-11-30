@@ -5,7 +5,7 @@ public enum TypeOfCell {
 
     String string;
 
-    TypeOfCell (String name) {
+    TypeOfCell(String name) {
         this.string = name;
     }
 

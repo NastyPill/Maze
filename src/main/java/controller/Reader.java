@@ -1,6 +1,9 @@
 package controller;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Reader implements Closeable{
 

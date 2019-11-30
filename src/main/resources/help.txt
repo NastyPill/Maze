@@ -5,9 +5,15 @@ Select file to read/write - you should select a
 Seed text area - you can enter seed (number) for maze.
 
 Size text area - you can enter size like:
- *width*x*height* size should be in 15-150
+ *width*x*height* size should be in 15-200
+ for pic function size should be in 15-999999
+ but if you will chose value more than 1000
+ you will wait some time. After value 3000
+ you will wait for about eternity :)
 
 Click Start button to start
+
+Click pic button to make a picture of maze
 
 Use arrow keys to move.
 
